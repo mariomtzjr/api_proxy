@@ -1,31 +1,36 @@
 version: "3.3"
 
 services:
-  prometheus:
-    image: prom/prometheus
-    ports:
-      - "9090:9090"
-    volumes:
-      - ${PWD}/prometheus.yml:/etc/prometheus/prometheus.yml
-
-  grafana:
-    image: grafana/grafana-enterprise
-    container_name: grafana
-    restart: unless-stopped
-    ports:
-      - '3000:3000'
-    volumes:
-      - grafana-storage:/var/lib/grafana
-
   proxy_app:
     build:
       context: .
       dockerfile: Dockerfile
-    depends_on:
-      - prometheus
+    # depends_on:
+      # - prometheus
     ports:
       - "8000:8000"
     command: sh -c "uvicorn app.main:app --reload --port=8000 --host=0.0.0.0"
+    env_file:
+      - .env
+      - db.env
+    depends_on:
+      - database
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u $$DB_USERNAME --password=$$DB_PASSWORD
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+  
+  database:
+    image: mysql:latest
+    env_file:
+      - db.env
+    volumes:
+      - database_data:/var/lib/mysql
+    ports:
+      - "3307:3306"
+    restart: always
 
 volumes:
-  grafana-storage: {}
+  database_data:

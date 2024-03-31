@@ -4,3 +4,7 @@ prometheus-client
 grafanalib
 requests
 httpx
+pymysql
+sqlalchemy
+starlette
+cryptography
