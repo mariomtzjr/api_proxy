@@ -3,3 +3,4 @@ uvicorn
 prometheus-client
 grafanalib
 requests
+httpx
