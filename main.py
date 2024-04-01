@@ -25,6 +25,7 @@ app.add_middleware(RateLimitMiddleware)
 @app.get("/proxy/{path:path}")
 @limiter.limit(os.environ.get('RATE_LIMIT'))
 async def proxy(path: str, request: Request):
+    print("proxy_path: ", path)
     target_url = f"{os.environ.get('URL_MELI_API', '')}{path}"
  
     # Verificar si la respuesta está en caché en Redis
@@ -49,8 +50,9 @@ async def proxy(path: str, request: Request):
 async def get_stats():
     return gs()
 
-@app.get("/redis/{path: path}")
+@app.get("/redis/{path:path}")
 async def get_redis_data(path: str, request: Request):
+    print("path: ", path)
     return get_data_from_redis(path)
 
 if __name__ == "__main__":

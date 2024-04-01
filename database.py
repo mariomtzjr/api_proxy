@@ -1,4 +1,5 @@
 from datetime import datetime
+import json
 import os
 import time
 
@@ -104,4 +105,9 @@ def store_data_in_redis(key, value):
 # Función para recuperar datos de Redis
 def get_data_from_redis(key):
     print("***** database.get_data_from_redis *****")
-    return redis_client.get(key)
+    try:
+        formatted_response = json.loads(redis_client.get(key))
+        return formatted_response
+    except json.JSONDecodeError as error:
+        print("Error getting data from redis: ", error)
+    return {}

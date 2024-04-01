@@ -17,6 +17,8 @@ services:
       - database
       - prometheus
       - grafana
+    links:
+     - redisdb
     healthcheck:
       test: mysqladmin ping -h 127.0.0.1 -u $$DB_USERNAME --password=$$DB_PASSWORD
       interval: 1m30s
@@ -34,7 +36,7 @@ services:
       - "3307:3306"
     restart: always
   
-  redis:
+  redisdb:
     image: redis:latest
     ports:
       - "6379:6379"
@@ -89,7 +91,7 @@ services:
 volumes:
   database_data:
   grafana-storage:
-  redis:
+  redisdb:
     driver: local
 
 networks:
