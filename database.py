@@ -31,7 +31,10 @@ DB_PORT = os.environ.get('DB_PORT', '')
 DATABASE_URL = f"mysql+pymysql://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}"
 engine = create_engine(DATABASE_URL)
 redis_client = redis.Redis(
-    host=os.environ.get('REDIS_HOST'), port=os.environ.get('REDIS_PORT'), db=0
+    host=os.environ.get('REDIS_HOST'),
+    port=int(os.environ.get('REDIS_PORT')),
+    decode_responses=True,
+    db=0
 )
 
 # Crear la base de datos si no existe
@@ -42,12 +45,14 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Funciones para interactuar con la base de datos
 def log_request(ip: str, path: str):
+    print("***** database.log_request *****")
     db = SessionLocal()
     db.add(UsageStat(ip=ip, path=path))
     db.commit()
     db.close()
 
 def get_stats():
+    print("***** database.get_stats *****")
     db = SessionLocal()
     stats = db.query(UsageStat).all()
     db.close()
@@ -60,18 +65,21 @@ def get_limit(ip: str):
     return {"ip": ip, "limit": count}
 
 def get_request_count_by_ip(ip: str):
+    print("***** database.get_request_count_by_ip *****")
     db = SessionLocal()
     count = db.query(UsageStat).filter(UsageStat.ip == ip).count()
     db.close()
     return count
 
 def get_request_count_by_path(path: str):
+    print("***** database.get_request_count_by_path *****")
     db = SessionLocal()
     count = db.query(UsageStat).filter(UsageStat.path == path).count()
     db.close()
     return count
 
 def check_database_connection():
+    print("***** database.check_database_connection *****")
     attempts = 0
     while attempts < 3:
         try:
@@ -90,8 +98,10 @@ def check_database_connection():
 
 # Función para almacenar datos en Redis
 def store_data_in_redis(key, value):
+    print("***** database.store_data_in_redis *****")
     redis_client.set(key, value)
 
 # Función para recuperar datos de Redis
 def get_data_from_redis(key):
+    print("***** database.get_data_from_redis *****")
     return redis_client.get(key)

@@ -41,6 +41,8 @@ services:
     restart: always
     env_file:
       - db.env
+    volumes: 
+      - ./cache:/data
   
   nginx:
     image: nginx:latest
@@ -87,6 +89,8 @@ services:
 volumes:
   database_data:
   grafana-storage:
+  redis:
+    driver: local
 
 networks:
   prometheus_mysql_exporter:

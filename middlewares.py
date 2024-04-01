@@ -44,8 +44,8 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         # except SignatureExpired:
         #     raise HTTPException(status_code=401, detail="Token expired")
 
-        if request_count_path >= self.limit_per_path:
-            return Response (f"Too Many Path Requests: {request_count_path}", status_code=429)
+        # if request_count_path >= self.limit_per_path:
+        #     return Response (f"Too Many Path Requests: {request_count_path}", status_code=429)
 
         log_request(remote_ip, request_path)
         response = await call_next(request)

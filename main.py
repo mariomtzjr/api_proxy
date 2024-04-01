@@ -29,6 +29,7 @@ async def proxy(path: str, request: Request):
  
     # Verificar si la respuesta está en caché en Redis
     cached_response = get_data_from_redis(path)
+    print("cached_redis: ", cached_response)
     if cached_response:
         return cached_response
     
@@ -38,8 +39,9 @@ async def proxy(path: str, request: Request):
             url=target_url,
             timeout=None
         )
-        # Almacenar la respuesta en caché en Redis
-        store_data_in_redis(path, response.json())
+        if response.status_code == 200:
+            # Almacenar la respuesta en caché en Redis
+            store_data_in_redis(path, response.content)
         return response.json()
 
 # Ruta para obtener las estadísticas
@@ -48,8 +50,8 @@ async def get_stats():
     return gs()
 
 @app.get("/redis/{path: path}")
-async def get_redis_data(path: str):
-    return store_data_in_redis(path)
+async def get_redis_data(path: str, request: Request):
+    return get_data_from_redis(path)
 
 if __name__ == "__main__":
     uvicorn.run("main:app", port=8000, host="0.0.0.0", log_level="info")
