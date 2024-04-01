@@ -39,6 +39,8 @@ services:
     ports:
       - "6379:6379"
     restart: always
+    env_file:
+      - db.env
   
   nginx:
     image: nginx:latest
