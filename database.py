@@ -1,5 +1,9 @@
 from datetime import datetime
 import os
+import time
+
+import pymysql
+import redis
 
 from sqlalchemy import create_engine, Column, Integer, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
@@ -26,6 +30,9 @@ DB_PORT = os.environ.get('DB_PORT', '')
 
 DATABASE_URL = f"mysql+pymysql://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}"
 engine = create_engine(DATABASE_URL)
+redis_client = redis.Redis(
+    host=os.environ.get('REDIS_HOST'), port=os.environ.get('REDIS_PORT'), db=0
+)
 
 # Crear la base de datos si no existe
 Base.metadata.create_all(bind=engine)
@@ -63,3 +70,28 @@ def get_request_count_by_path(path: str):
     count = db.query(UsageStat).filter(UsageStat.path == path).count()
     db.close()
     return count
+
+def check_database_connection():
+    attempts = 0
+    while attempts < 3:
+        try:
+            conn = pymysql.connect(
+                host=DB_HOST,
+                user=DB_USERNAME,
+                password=DB_PASSWORD,
+                database=DB_NAME
+            )
+            return conn
+        except pymysql.Error as e:
+            print(f"Error connecting to database: {e}")
+            attempts += 1
+            time.sleep(3)  # Esperar antes de volver a intentar la conexión
+    raise Exception("Failed to connect to database after multiple attempts")
+
+# Función para almacenar datos en Redis
+def store_data_in_redis(key, value):
+    redis_client.set(key, value)
+
+# Función para recuperar datos de Redis
+def get_data_from_redis(key):
+    return redis_client.get(key)

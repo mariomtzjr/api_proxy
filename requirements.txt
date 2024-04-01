@@ -8,3 +8,6 @@ pymysql
 sqlalchemy
 starlette
 cryptography
+itsdangerous
+slowapi
+redis
