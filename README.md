@@ -10,6 +10,7 @@ Antes de comenzar, el sistema deberá o ambiente virtual deberá tener instalado
 - Mysql
 - Prometheus
 - Grafana
+- Redis
 
 ## Instalación y configuración
 1. Clonar el repositorio:  
