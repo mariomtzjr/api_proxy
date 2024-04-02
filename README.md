@@ -38,3 +38,11 @@ Antes de comenzar, el sistema deberá o ambiente virtual deberá tener instalado
    - Accede a la interfaz web de Grafana, usuario por defaualt `admin`, password `admin`
    - Configura un origen de datos Prometheus.
    - Importa un panel predefinido para visualizar las métricas de FastAPI.
+
+### Prometheus panel
+Open a browser window and go to:  
+`localhost:9090`
+
+### Grafana panel
+Open a browser window and go to:  
+`localhost:3000`  
