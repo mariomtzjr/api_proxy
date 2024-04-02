@@ -11,3 +11,5 @@ cryptography
 itsdangerous
 slowapi
 redis
+pytest
+python-dotenv

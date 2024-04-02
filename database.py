@@ -109,6 +109,8 @@ class DBManager:
             return formatted_response
         except json.JSONDecodeError as error:
             print("Error getting data from redis: ", error)
+        except TypeError as type_error:
+            print(type_error)
         return {}
     
     def get_redis_data(self, key: str):
