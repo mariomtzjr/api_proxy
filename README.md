@@ -1,6 +1,8 @@
 # Proxy de APIs con FastAPI, NGINX, Prometheus y Grafana
 Este proyecto es un proxy de APIs desarrollado con FastAPI que utiliza NGINX para el control de acceso y límites de tasa, y Prometheus y Grafana para la monitorización y visualización de estadísticas.
 
+![API Proxy](./documents/api_proxy_arq.drawio.png)
+
 ## Requisitos previos
 Antes de comenzar, el sistema deberá o ambiente virtual deberá tener instalado lo siguiente:
 
