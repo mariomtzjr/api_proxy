@@ -10,21 +10,19 @@ from starlette.responses import Response
 SECRET_KEY = os.environ.get("SECRET_KEY", "")
 serializer = Serializer(SECRET_KEY)  # El token expira en 60 segundos
 
-from .database import (
-    get_request_count_by_path,
-    log_request
-)
+from .database import DBManager
 
 
 class RateLimitMiddleware(BaseHTTPMiddleware):
     def __init__(self, app, limit_per_path: int = 10):
         super().__init__(app)
         self.limit_per_path = limit_per_path
+        self.db_service = DBManager()
 
     async def dispatch(self, request, call_next):
         request_path = request.url.path
         remote_ip = request.client.host
-        request_count_path = get_request_count_by_path(request_path)
+        request_count_path = self.db_service.get_request_count_by_path(request_path)
 
         # # Verificar si se incluye el token de autenticación en el encabezado de la solicitud
         # if "Authorization" not in request.headers:
@@ -47,6 +45,6 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         # if request_count_path >= self.limit_per_path:
         #     return Response (f"Too Many Path Requests: {request_count_path}", status_code=429)
 
-        log_request(remote_ip, request_path)
+        self.db_service.log_request(remote_ip, request_path)
         response = await call_next(request)
         return response
