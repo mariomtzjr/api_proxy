@@ -61,6 +61,9 @@ services:
       - "9090:9090"
     links:
       - mysql_exporter
+    depends_on:
+      - database
+      - mysql_exporter
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
 

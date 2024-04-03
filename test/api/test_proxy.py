@@ -57,5 +57,42 @@ class TestProxy(unittest.TestCase):
 
         self.assertEqual(data["error"], "resource not found")
 
+    def test_stats(self):
+        """Test for /stats endpoint
+        """
+        self.api_url = self.api_url[:-6]
+        path = "/stats"
+        result = self.session.get(self.api_url + path)
+
+        data = result.json()
+
+        self.assertEqual(result.status_code, 200)
+        self.assertIsInstance(data, list)
+        self.assertIsInstance(data[0], dict)
+
+    def test_redis_success(self):
+        """Test for /redis/categories/MLA1071 endpoint
+        """
+        self.api_url = self.api_url[:-6]
+        path = "/redis/categories/MLA1071"
+        result = self.session.get(self.api_url + path)
+
+        data = result.json()
+
+        self.assertEqual(result.status_code, 200)
+        self.assertIsInstance(data, dict)
+
+    def test_redis_not_found(self):
+        """Test for /redis/categories/ABC1239 endpoint
+        """
+        self.api_url = self.api_url[:-6]
+        path = "/redis/categories/ABC1239"
+        result = self.session.get(self.api_url + path)
+
+        data = result.json()
+
+        self.assertEqual(result.status_code, 200)
+        self.assertEqual(data, {})
+
 if __name__ == '__main__':
     unittest.main()

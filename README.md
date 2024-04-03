@@ -41,6 +41,9 @@ Antes de comenzar, el sistema deberá o ambiente virtual deberá tener instalado
    - Configura un origen de datos Prometheus.
    - Importa un panel predefinido para visualizar las métricas de FastAPI.
 
+## Run Tests
+`pytest -v test/api/test_proxy.py`
+
 ### Prometheus panel
 Open a browser window and go to:  
 `localhost:9090`
