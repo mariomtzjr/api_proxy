@@ -1,0 +1,17 @@
+global:
+  scrape_interval: 2s # when Prometheus is pulling data from exporters etc
+  evaluation_interval: 10s # time between each evaluation of Prometheus' alerting rules
+
+scrape_configs:
+  - job_name: prometheus # Nombre del contenedor de prometheus
+    static_configs:
+      - targets: ["prometheus:9090"]
+  - job_name: mysql_exporter # Nombre del contenedor de la base de datos
+    metrics_path: "/metrics"
+    static_configs:
+      - targets: ["mysql_exporter:9104"]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: job
+        replacement: "mysql_exporter:9104"
+        # The mysqld_exporter host:port

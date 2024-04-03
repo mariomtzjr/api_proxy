@@ -9,10 +9,13 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 
 from .middlewares import RateLimitMiddleware
-from .database import DBManager
+from .database import DBManager, engine
+from .models import Base
 
 limiter = Limiter(key_func=get_remote_address)
 db_service = DBManager()
+# Crear la base de datos si no existe
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 app.state.limiter = limiter

@@ -8,25 +8,26 @@ import redis
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from .models import Base, UsageStat
+from .models import UsageStat
+
+# Configurar la conexión a la base de datos
+DB_HOST = os.environ.get('DB_HOST', '')
+DB_USERNAME = os.environ.get('DB_USERNAME', '')
+DB_PASSWORD = os.environ.get('DB_PASSWORD', '')
+DB_ROOT_PASSWORD = os.environ.get('DB_ROOT_PASSWORD', '')
+DB_NAME = os.environ.get('DB_NAME', '')
+DB_PORT = os.environ.get('DB_PORT', '')
+
+DB_URL = f"mysql+pymysql://root:{DB_ROOT_PASSWORD}@{DB_HOST}/{DB_NAME}"
+engine = create_engine(DB_URL)
 
 
 class DBManager:
 
     def __init__(self) -> None:
-        # Configurar la conexión a la base de datos
-        self.db_host = os.environ.get('DB_HOST', '')
-        self.db_username = os.environ.get('DB_USERNAME', '')
-        self.db_password = os.environ.get('DB_PASSWORD', '')
-        self.db_name = os.environ.get('DB_NAME', '')
-        self.db_port = os.environ.get('DB_PORT', '')
-        self.db_url = f"mysql+pymysql://{self.db_username}:{self.db_password}@{self.db_host}/{self.db_name}"
-        self.engine = create_engine(self.db_url)
-
-        # Crear la base de datos si no existe
-        Base.metadata.create_all(bind=self.engine)
+        
         # Crear una sesión de base de datos
-        self.sessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
+        self.sessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
         
         self.redis_client = redis.Redis(
             host=os.environ.get('REDIS_HOST'),
@@ -69,24 +70,6 @@ class DBManager:
         count = db.query(UsageStat).filter(UsageStat.path == path).count()
         db.close()
         return count
-
-    def check_database_connection(self):
-        print("***** database.check_database_connection *****")
-        attempts = 0
-        while attempts < 3:
-            try:
-                conn = pymysql.connect(
-                    host=self.db_host,
-                    user=self.db_username,
-                    password=self.db_password,
-                    database=self.db_name
-                )
-                return conn
-            except pymysql.Error as e:
-                print(f"Error connecting to database: {e}")
-                attempts += 1
-                time.sleep(3)  # Esperar antes de volver a intentar la conexión
-        raise Exception("Failed to connect to database after multiple attempts")
 
     # Función para almacenar datos en Redis
     def store_data_in_redis(self, key: str, value: str):

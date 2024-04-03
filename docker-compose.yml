@@ -2,6 +2,7 @@ version: "3.3"
 
 services:
   proxy_app:
+    container_name: proxy_app
     build:
       context: .
       dockerfile: Dockerfile
@@ -20,14 +21,16 @@ services:
     links:
      - redisdb
     healthcheck:
-      test: mysqladmin ping -h 127.0.0.1 -u $$DB_USERNAME --password=$$DB_PASSWORD
+      test: mysqladmin ping -h 127.0.0.1 -u $$DB_USERNAME --password=$$DB_ROOT_PASSWORD
       interval: 1m30s
       timeout: 10s
       retries: 3
       start_period: 40s
+    restart:  always
   
   database:
     image: mysql:latest
+    container_name: database
     env_file:
       - db.env
     volumes:
@@ -38,6 +41,7 @@ services:
   
   redisdb:
     image: redis:latest
+    container_name: redisdb
     ports:
       - "6379:6379"
     restart: always
@@ -48,6 +52,7 @@ services:
   
   nginx:
     image: nginx:latest
+    container_name: nginx
     ports:
       - "8080:8080"
     volumes:
@@ -57,6 +62,7 @@ services:
   
   prometheus:
     image: prom/prometheus
+    container_name: prometheus
     ports:
       - "9090:9090"
     links:
@@ -78,18 +84,16 @@ services:
   
   # tool to connect to mysql instance, and allow prometheus to collect mysql stats
   mysql_exporter:
-    image: prom/mysqld-exporter
-    links:
-      - database
-    ports:
-      - '9104:9104'
-    depends_on:
-      - database
-    environment:
-      - DATA_SOURCE_NAME="meli_user:meli_password@database:3306/meli_stats"
-    command: /bin/mysqld_exporter collect.binlog_size=true collect.info_schema.processlist=true
+    image: quay.io/prometheus/mysqld-exporter
+    container_name: mysqld-exporter
+    restart: unless-stopped
+    command:
+     - "--mysqld.username=root:myRootPassword123"
+     - "--mysqld.address=localhost:3306"
     networks:
       - prometheus_mysql_exporter
+    volumes:
+      - ./.my.cnf:/cfg/.my.cnf
 
 volumes:
   database_data:
@@ -99,4 +103,4 @@ volumes:
 
 networks:
   prometheus_mysql_exporter:
-    internal: true
+    driver: bridge
