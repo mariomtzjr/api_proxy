@@ -10,7 +10,7 @@ from starlette.responses import Response
 SECRET_KEY = os.environ.get("SECRET_KEY", "")
 serializer = Serializer(SECRET_KEY)  # El token expira en 60 segundos
 
-from .database import DBManager
+from .database.database import DBManager
 
 
 class RateLimitMiddleware(BaseHTTPMiddleware):
@@ -24,7 +24,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         remote_ip = request.client.host
         request_count_path = self.db_service.get_request_count_by_path(request_path)
 
-        # # Verificar si se incluye el token de autenticación en el encabezado de la solicitud
+        # Verificar si se incluye el token de autenticación en el encabezado de la solicitud
         # if "Authorization" not in request.headers:
         #     raise HTTPException(status_code=401, detail="Missing Authorization header")
 
@@ -37,6 +37,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         # # Verificar y decodificar el token
         # try:
         #     data = serializer.loads(token)
+        #     print("Data", data)
         # except BadSignature:
         #     raise HTTPException(status_code=401, detail="Invalid token")
         # except SignatureExpired:

@@ -1,17 +1,16 @@
-# Proxy de APIs con FastAPI, NGINX, Prometheus y Grafana
-Este proyecto es un proxy de APIs desarrollado con FastAPI que utiliza NGINX para el control de acceso y límites de tasa, y Prometheus y Grafana para la monitorización y visualización de estadísticas.
+# Proxy de APIs con Traefik and FastApi
+Este proyecto es un proxy de APIs desarrollado con FastAPI que utiliza Traefik como reverse proxy
 
-![API Proxy](./documents/api_proxy_arq.png)
+![API Proxy](./documents/api.png)
 
 ## Requisitos previos
-Antes de comenzar, el sistema deberá o ambiente virtual deberá tener instalado lo siguiente:
+Antes de comenzar, el sistema o ambiente virtual deberá tener instalado lo siguiente:
 
 - Python 3.x
 - Docker
 - Nginx
 - Mysql
-- Prometheus
-- Grafana
+- Traefik
 - Redis
 
 ## Instalación y configuración
@@ -24,30 +23,22 @@ Antes de comenzar, el sistema deberá o ambiente virtual deberá tener instalado
    `docker-compose build`  
    `docker-compose up` # Para ver logs y proceso de despliegue  
    `docker-compose up -d` # Para no obtener salida al levantar el contenedor 
-4. Configuración de NGINX:
-   - Copia el archivo nginx.conf a la ubicación de configuración de NGINX.
-   - Actualiza la configuración; dirección del servidor y los límites de tasa (esta configuración dependerá de tus necesidades).
-5. Configuración de Prometheus:  
-   - Copia el archivo prometheus.yml a la ubicación de configuración de Prometheus.
-   - Actualiza la configuración según la dirección del servidor de FastAPI.
-6. Inicialización de  FastAPI:
+4. Inicialización de  FastAPI (opcional, inicia con docker):
    `uvicorn proxy:app --host 0.0.0.0 --port 8000`
-7. Inicialización de NGINX:  
-   `sudo systemctl start nginx`
-8. Inicialización de Prometheus:
-   `./prometheus --config.file=prometheus.yml`
-9.  Inicialización de Grafana:
-   - Accede a la interfaz web de Grafana, usuario por defaualt `admin`, password `admin`
-   - Configura un origen de datos Prometheus.
-   - Importa un panel predefinido para visualizar las métricas de FastAPI.
+5. Inicialización de Traefik:  
+   `docker-compose -f docker-compose-traefik.yml up`
 
 ## Run Tests
 `pytest -v test/api/test_proxy.py`
 
-### Prometheus panel
+### Root path
 Open a browser window and go to:  
-`localhost:9090`
+`localhost:8000/`
 
-### Grafana panel
+### Traefik panel
 Open a browser window and go to:  
-`localhost:3000`  
+`localhost:8080` o `traefik.localhost`
+
+### Panelar panel
+Open a browser window and go to:  
+`panel.localhost:8000/paneler`  

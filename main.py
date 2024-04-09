@@ -9,12 +9,12 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 
 from .middlewares import RateLimitMiddleware
-from .database import DBManager, engine
+from .database.database import DBManager, engine
 from .models import Base
 
 limiter = Limiter(key_func=get_remote_address)
 db_service = DBManager()
-# Crear la base de datos si no existe
+# # Crear la base de datos si no existe
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
@@ -44,13 +44,18 @@ async def proxy(path: str, request: Request):
         return response.json()
 
 # Ruta para obtener las estadísticas
-@app.get("/stats")
-async def get_stats():
-    return db_service.get_stats()
+# @app.get("/stats")
+# async def get_stats():
+#     return db_service.get_stats()
 
 @app.get("/redis/{path:path}")
 async def get_redis_data(path: str, request: Request):
-    return db_service.get_redis_data(path)
+    # return db_service.get_redis_data(path)
+    return {f"{path}": "OK"}
+
+@app.get("/")
+async def main():
+    return {"Helo world": "App with Fastapi and Traefik"}
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", port=8000, host="0.0.0.0", log_level="info")
+    uvicorn.run("main:app", port=80, host="0.0.0.0", log_level="info")

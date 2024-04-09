@@ -7,18 +7,23 @@ import redis
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from dotenv import load_dotenv
 
-from .models import UsageStat
+from ..models import UsageStat
+
+load_dotenv()
 
 # Configurar la conexión a la base de datos
-DB_HOST = os.environ.get('DB_HOST', '')
-DB_USERNAME = os.environ.get('DB_USERNAME', '')
-DB_PASSWORD = os.environ.get('DB_PASSWORD', '')
-DB_ROOT_PASSWORD = os.environ.get('DB_ROOT_PASSWORD', '')
-DB_NAME = os.environ.get('DB_NAME', '')
-DB_PORT = os.environ.get('DB_PORT', '')
+DB_HOST             = os.getenv('DB_HOST', '')
+DB_USERNAME         = os.getenv('DB_USERNAME', '')
+DB_PASSWORD         = os.getenv('DB_PASSWORD', '')
+DB_ROOT_PASSWORD    = os.getenv('DB_ROOT_PASSWORD', '')
+DB_NAME             = os.getenv('DB_NAME', '')
+DB_PORT             = os.getenv('DB_PORT', '')
+REDIS_HOST          = os.getenv('REDIS_HOST', '')
+REDIS_PORT          = os.getenv('REDIS_PORT', '')
 
-DB_URL = f"mysql+pymysql://root:{DB_ROOT_PASSWORD}@{DB_HOST}/{DB_NAME}"
+DB_URL = f"mysql+pymysql://{DB_USERNAME}:{DB_ROOT_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 engine = create_engine(DB_URL)
 
 
@@ -30,8 +35,8 @@ class DBManager:
         self.sessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
         
         self.redis_client = redis.Redis(
-            host=os.environ.get('REDIS_HOST'),
-            port=int(os.environ.get('REDIS_PORT')),
+            host=REDIS_HOST,
+            port=int(REDIS_PORT),
             decode_responses=True,
             db=0
         )
