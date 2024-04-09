@@ -21,13 +21,17 @@ Antes de comenzar, el sistema o ambiente virtual deberá tener instalado lo sigu
    `pip install -r requirements.txt`
 3. Crear red de Docker:  
    `docker network create traefik-public`
-4. Levantar docker:  
+4. Configuración de credenciales:  
+   `export USERNAME=admin`  
+   `export PASSWORD=changeme`  
+   `export HASHED_PASSWORD=$(openssl passwd -apr1 $PASSWORD)` De esta manera, el password se almacena como HASH
+5. Levantar docker:  
    `docker-compose build`  
    `docker-compose up` # Para ver logs y proceso de despliegue  
    `docker-compose up -d` # Para no obtener salida al levantar el contenedor 
-5. Inicialización de  FastAPI (opcional, inicia con docker):
+6. Inicialización de  FastAPI (opcional, inicia con docker):
    `uvicorn proxy:app --host 0.0.0.0 --port 8000`
-6. Inicialización de Traefik:  
+7. Inicialización de Traefik:  
    `docker-compose -f docker-compose-traefik.yml up`
 
 ## Run Tests
