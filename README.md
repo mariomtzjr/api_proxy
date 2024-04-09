@@ -19,13 +19,15 @@ Antes de comenzar, el sistema o ambiente virtual deberá tener instalado lo sigu
    `cd api_proxy`  
 2. Instalación de dependencias:  
    `pip install -r requirements.txt`
-3. Levantar docker:  
+3. Crear red de Docker:  
+   `docker network create traefik-public`
+4. Levantar docker:  
    `docker-compose build`  
    `docker-compose up` # Para ver logs y proceso de despliegue  
    `docker-compose up -d` # Para no obtener salida al levantar el contenedor 
-4. Inicialización de  FastAPI (opcional, inicia con docker):
+5. Inicialización de  FastAPI (opcional, inicia con docker):
    `uvicorn proxy:app --host 0.0.0.0 --port 8000`
-5. Inicialización de Traefik:  
+6. Inicialización de Traefik:  
    `docker-compose -f docker-compose-traefik.yml up`
 
 ## Run Tests
